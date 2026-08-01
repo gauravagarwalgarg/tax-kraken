@@ -4,6 +4,16 @@ __pycache__/
 .venv/
 venv/
 env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Packaging/build outputs
+*.egg-info/
+dist/
+build/
+*.whl
+*.tar.gz
 
 # Local ITR source files and generated analysis outputs
 *.pdf
@@ -28,6 +38,9 @@ tax_routing_rate_assumptions.json
 
 # MkDocs build
 site/
+
+# Local docs and analysis outputs
+*.html
 
 # OS/editor
 .DS_Store

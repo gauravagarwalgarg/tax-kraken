@@ -32,7 +32,7 @@ tax-kraken-routing --person-folder PersonA="..\sample-data\person-a" --person-fo
 
 Open `tax_routing_dashboard.html` for the graphical reassessment.
 
-The root files `analysis.py` and `tax_routing_simulation.py` are compatibility launchers, so direct script execution still works from a source checkout.
+The package entry points are defined in the installed project metadata and can be invoked through the console scripts `tax-kraken-analysis` and `tax-kraken-routing` after installing the package.
 For repeated runs, write routing outputs into an ignored folder such as `runs/`.
 
 ## Outputs
@@ -73,6 +73,8 @@ The repo includes GitHub Actions for:
 - Python compile checks.
 - Strict MkDocs build.
 - GitHub Pages deployment from `main` via the Pages workflow.
+
+For the Pages workflow to work, GitHub repository settings must have Pages enabled with the source set to GitHub Actions.
 
 ## Disclaimer
 
