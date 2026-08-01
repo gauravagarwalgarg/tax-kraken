@@ -24,9 +24,8 @@ jobs:
 
       - name: Compile Python
         run: |
-          python -m py_compile analysis.py tax_routing_simulation.py
+          python -m compileall analysis.py tax_routing_simulation.py src
 
       - name: Build docs
         run: |
           mkdocs build --strict
-

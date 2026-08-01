@@ -7,8 +7,7 @@ The tool is designed for private local use first. The generated data is intentio
 ## Core Workflow
 
 1. Put PDFs in a folder with names like `2018-19.pdf`.
-2. Run `analysis.py --folder <folder>`.
+2. Run `tax-kraken-analysis --folder <folder>`.
 3. The tool extracts data and writes JSON files.
 4. The dashboard is generated from the JSON, not from hidden in-memory state.
 5. Review `dashboard.html`, `json/summary.json`, and `output/itr_post_analysis_report.pdf`.
-

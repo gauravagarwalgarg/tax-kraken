@@ -10,6 +10,7 @@ env/
 *.PDF
 **/json/
 **/output/
+**/runs/
 **/dashboard.html
 **/itr_dataset.csv
 **/itr_post_analysis_report.pdf

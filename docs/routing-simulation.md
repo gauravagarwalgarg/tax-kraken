@@ -5,8 +5,10 @@ The routing simulator estimates tax saved when business income is paid out as sa
 ## Command
 
 ```powershell
-python tax_routing_simulation.py --person-folder PersonA=..\sample-data\person-a --person-folder PersonB=..\sample-data\person-b --business-profile company_25 --individual-regime old --fetch-rate-sources
+tax-kraken-routing --person-folder PersonA=..\sample-data\person-a --person-folder PersonB=..\sample-data\person-b --business-profile company_25 --individual-regime old --fetch-rate-sources
 ```
+
+From a source checkout, `python tax_routing_simulation.py ...` is also supported as a compatibility launcher.
 
 ## Outputs
 
@@ -16,6 +18,7 @@ python tax_routing_simulation.py --person-folder PersonA=..\sample-data\person-a
 - `official_tax_rate_sources_snapshot.json`
 
 These files are ignored by Git because they can reveal private financial data.
+For repeated experiments, use output paths under an ignored folder such as `runs/`.
 
 ## Interpretation
 

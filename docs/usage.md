@@ -3,14 +3,16 @@
 ## Analyze A Folder
 
 ```powershell
-python analysis.py --folder "..\sample-data\person-a"
+tax-kraken-analysis --folder "..\sample-data\person-a"
 ```
 
 ## Analyze Without PDF Report
 
 ```powershell
-python analysis.py --folder "..\sample-data\person-b" --no-pdf
+tax-kraken-analysis --folder "..\sample-data\person-b" --no-pdf
 ```
+
+From a source checkout, `python analysis.py --folder <folder>` is also supported as a compatibility launcher.
 
 ## Expected File Naming
 

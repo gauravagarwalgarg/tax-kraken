@@ -22,6 +22,9 @@ docs = [
   "mkdocs-material>=9.5"
 ]
 
-[tool.setuptools]
-py-modules = ["analysis", "tax_routing_simulation"]
+[project.scripts]
+tax-kraken-analysis = "tax_kraken.analysis:main"
+tax-kraken-routing = "tax_kraken.routing_simulation:main"
 
+[tool.setuptools.packages.find]
+where = ["src"]
