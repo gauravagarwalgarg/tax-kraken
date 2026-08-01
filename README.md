@@ -72,7 +72,7 @@ The repo includes GitHub Actions for:
 
 - Python compile checks.
 - Strict MkDocs build.
-- GitHub Pages deployment from `main`.
+- GitHub Pages deployment from `main` via the Pages workflow.
 
 ## Disclaimer
 
