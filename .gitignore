@@ -12,6 +12,14 @@ env/
 **/output/
 **/dashboard.html
 **/itr_dataset.csv
+**/itr_post_analysis_report.pdf
+**/*_generated.csv
+**/*_generated.json
+**/*_analysis.csv
+**/*_analysis.json
+**/*_dataset.csv
+**/*_dashboard.html
+**/*_report.pdf
 tax_routing_simulation.csv
 official_tax_rate_sources_snapshot.json
 tax_routing_dashboard.html
