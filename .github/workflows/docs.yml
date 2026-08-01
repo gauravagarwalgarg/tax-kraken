@@ -1,4 +1,4 @@
-name: Publish Docs
+name: Publish Docs (Pages Actions)
 
 on:
   push:
@@ -6,10 +6,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,9 +37,17 @@ jobs:
         run: |
           mkdocs build --strict
 
-      - name: Deploy MkDocs to GitHub Pages
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          mkdocs gh-deploy --force
+      - name: Setup GitHub Pages (enable if needed)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 

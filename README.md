@@ -64,12 +64,18 @@ This tool is local-first. Generated JSON, dashboards, reports, CSV files, and so
 
 ## Documentation
 
+Documentation: https://gauravagarwalgarg.github.io/tax-kraken/
+
 Build docs locally:
 
 ```powershell
 python -m pip install -e ".[docs]"
 mkdocs serve
 ```
+
+Repository: https://github.com/gauravagarwalgarg/tax-kraken
+
+About: A toolkit for extracting ITR PDF data, building local dashboards, and simulating tax-routing scenarios.
 
 ## GitHub CI/CD
 
