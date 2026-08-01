@@ -1,5 +1,6 @@
 site_name: ITR Post Analyzer
 site_description: Folder-driven Indian Income Tax Return analytics dashboard and forecasting tool.
+site_url: https://gauravagarwalgarg.github.io/tax-kraken/
 theme:
   name: material
   features:

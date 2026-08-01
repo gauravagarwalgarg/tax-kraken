@@ -1,4 +1,9 @@
-# Tax Kraken
+# Tax Kraken 🦑
+
+[![Docs](https://github.com/gauravagarwalgarg/tax-kraken/actions/workflows/docs.yml/badge.svg)](https://github.com/gauravagarwalgarg/tax-kraken/actions/workflows/docs.yml)
+[![Docs Live](https://img.shields.io/badge/docs-live-brightgreen.svg)](https://gauravagarwalgarg.github.io/tax-kraken/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Tax Kraken is a local-first Indian Income Tax Return post-analysis toolkit. It extracts year-wise ITR PDF data, generates private JSON datasets, builds interactive dashboards, estimates forward trends, and simulates tax saved by routing business income as salary/remuneration to related individuals.
 
