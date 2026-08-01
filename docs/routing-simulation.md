@@ -5,7 +5,7 @@ The routing simulator estimates tax saved when business income is paid out as sa
 ## Command
 
 ```powershell
-python tax_routing_simulation.py --person-folder Father=PapaITR --person-folder Mother=MummyITR --business-profile company_25 --individual-regime old --fetch-rate-sources
+python tax_routing_simulation.py --person-folder PersonA=..\sample-data\person-a --person-folder PersonB=..\sample-data\person-b --business-profile company_25 --individual-regime old --fetch-rate-sources
 ```
 
 ## Outputs
@@ -22,15 +22,14 @@ These files are ignored by Git because they can reveal private financial data.
 The model compares:
 
 - Scenario A: business keeps the routed amount and pays business tax.
-- Scenario B: business deducts salary/remuneration and parents pay incremental individual tax.
+- Scenario B: business deducts salary/remuneration and related individuals pay incremental individual tax.
 
 Net saving is:
 
 ```text
-business tax saved - estimated incremental parent tax
+business tax saved - estimated incremental individual tax
 ```
 
 ## Caveat
 
 The simulation is an analytical estimate. Actual tax treatment depends on business structure, books of account, reasonableness of remuneration, TDS compliance, related-party rules, and the applicable regime for each taxpayer.
-

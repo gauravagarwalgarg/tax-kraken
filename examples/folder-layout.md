@@ -7,19 +7,19 @@ workspace/
   tax-kraken/
     analysis.py
     tax_routing_simulation.py
-  PapaITR/
-    2013-14.pdf
-    2014-15.pdf
-  MummyITR/
-    2013-14.pdf
-    2014-15.pdf
+  sample-data/
+    person-a/
+      2013-14.pdf
+      2014-15.pdf
+    person-b/
+      2013-14.pdf
+      2014-15.pdf
 ```
 
 Run from inside `tax-kraken`:
 
 ```powershell
-python analysis.py --folder ..\PapaITR
-python analysis.py --folder ..\MummyITR
-python tax_routing_simulation.py --person-folder Father=..\PapaITR --person-folder Mother=..\MummyITR
+python analysis.py --folder ..\sample-data\person-a
+python analysis.py --folder ..\sample-data\person-b
+python tax_routing_simulation.py --person-folder PersonA=..\sample-data\person-a --person-folder PersonB=..\sample-data\person-b
 ```
-

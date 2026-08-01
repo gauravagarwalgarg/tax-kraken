@@ -3,13 +3,13 @@
 ## Analyze A Folder
 
 ```powershell
-python analysis.py --folder "C:\path\to\PapaITR"
+python analysis.py --folder "..\sample-data\person-a"
 ```
 
 ## Analyze Without PDF Report
 
 ```powershell
-python analysis.py --folder "C:\path\to\MummyITR" --no-pdf
+python analysis.py --folder "..\sample-data\person-b" --no-pdf
 ```
 
 ## Expected File Naming
@@ -23,4 +23,3 @@ PDF names should include the financial year:
 ```
 
 The assessment year is inferred from the financial year.
-

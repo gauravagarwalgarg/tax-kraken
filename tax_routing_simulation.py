@@ -21,7 +21,8 @@ OFFICIAL_TAX_RATE_SOURCES = {
 
 # Historical old-regime individual slabs for below-60 resident individuals.
 # The TRACES archive lists FY-wise slabs from FY 2013-14 through FY 2025-26.
-# Papa/Mummy DOBs from the PDFs indicate both remain below 60 across this span.
+# Use these below-60 slabs by default. If the taxpayer is a senior citizen,
+# adjust the slab table before relying on estimates.
 INDIVIDUAL_OLD_REGIME_BY_FY: dict[str, dict[str, Any]] = {
     "2013-14": {"slabs": [(200000, 0.00), (300000, 0.10), (500000, 0.20), (float("inf"), 0.30)], "rebate_limit": 500000, "rebate_max": 2000, "cess_rate": 0.03},
     "2014-15": {"slabs": [(250000, 0.00), (250000, 0.10), (500000, 0.20), (float("inf"), 0.30)], "rebate_limit": 500000, "rebate_max": 2000, "cess_rate": 0.03},
@@ -108,11 +109,6 @@ def parse_person_folder(value: str) -> PersonFolder:
 
 
 def routed_amount(person: str, itr_row: dict[str, Any]) -> float:
-    name = person.lower()
-    if name.startswith("father") or name.startswith("papa"):
-        return float(itr_row.get("gross_salary") or itr_row.get("salary") or 0)
-    if name.startswith("mother") or name.startswith("mummy"):
-        return float(itr_row.get("business_income") or itr_row.get("gross_salary") or itr_row.get("salary") or 0)
     return float(itr_row.get("gross_salary") or itr_row.get("salary") or itr_row.get("business_income") or 0)
 
 
@@ -135,8 +131,8 @@ def build_year_matrix(person_folders: list[PersonFolder], business_profile: str,
             total_income[person] = float(row.get("total_income") or 0)
         matrix[fy] = {
             "assessment_year": assessment_year(fy),
-            "business_profit_after_parent_routing": 0,
-            "business_net_profit_before_parent_routing": sum(routed.values()),
+            "business_profit_after_routing": 0,
+            "business_net_profit_before_routing": sum(routed.values()),
             "salary_or_remuneration_routed_by_person": routed,
             "actual_tax_paid_by_person": actual_tax,
             "actual_total_income_by_person": total_income,
@@ -156,23 +152,23 @@ def simulate(matrix: dict[str, dict[str, Any]]) -> pd.DataFrame:
         actual_tax_by_person = config["actual_tax_paid_by_person"]
 
         total_routed = sum(routed_by_person.values())
-        profit_before = float(config["business_net_profit_before_parent_routing"])
-        profit_after = float(config["business_profit_after_parent_routing"])
+        profit_before = float(config["business_net_profit_before_routing"])
+        profit_after = float(config["business_profit_after_routing"])
         business_tax_without = compute_business_tax(profit_before, business_profile)
         business_tax_with = compute_business_tax(profit_after, business_profile)
         business_tax_saved = business_tax_without - business_tax_with
 
-        incremental_parent_tax = {}
+        incremental_individual_tax = {}
         tax_with = {}
         tax_without = {}
         for person, amount in routed_by_person.items():
             actual_total_income = total_income_by_person[person]
             tax_with[person] = compute_slab_tax(actual_total_income, fy, regime)
             tax_without[person] = compute_slab_tax(max(actual_total_income - amount, 0), fy, regime)
-            incremental_parent_tax[person] = max(tax_with[person] - tax_without[person], 0)
+            incremental_individual_tax[person] = max(tax_with[person] - tax_without[person], 0)
 
-        parent_incremental_tax_total = sum(incremental_parent_tax.values())
-        actual_parent_tax_total = sum(actual_tax_by_person.values())
+        individual_incremental_tax_total = sum(incremental_individual_tax.values())
+        actual_individual_tax_total = sum(actual_tax_by_person.values())
         rows.append(
             {
                 "Financial Year": fy,
@@ -185,12 +181,12 @@ def simulate(matrix: dict[str, dict[str, Any]]) -> pd.DataFrame:
                 "Business Tax Without Routing": business_tax_without,
                 "Business Tax With Routing": business_tax_with,
                 "Business Tax Saved": business_tax_saved,
-                "Estimated Parent Incremental Tax": parent_incremental_tax_total,
-                "Actual Parent Tax Paid": actual_parent_tax_total,
-                "Estimated Net Tax Saved": business_tax_saved - parent_incremental_tax_total,
-                "Net Saved Using Actual Tax Paid": business_tax_saved - actual_parent_tax_total,
+                "Estimated Individual Incremental Tax": individual_incremental_tax_total,
+                "Actual Individual Tax Paid": actual_individual_tax_total,
+                "Estimated Net Tax Saved": business_tax_saved - individual_incremental_tax_total,
+                "Net Saved Using Actual Tax Paid": business_tax_saved - actual_individual_tax_total,
                 **{f"Routed To {p}": v for p, v in routed_by_person.items()},
-                **{f"Incremental Tax {p}": v for p, v in incremental_parent_tax.items()},
+                **{f"Incremental Tax {p}": v for p, v in incremental_individual_tax.items()},
                 **{f"Actual Tax Paid {p}": v for p, v in actual_tax_by_person.items()},
             }
         )
@@ -250,7 +246,7 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
 <body>
   <header>
     <h1>Salary Routing Tax Savings Dashboard</h1>
-    <p>FY 2013-14 to FY 2025-26. Compares business tax avoided against estimated incremental individual tax in Papa/Mummy ITRs.</p>
+    <p>FY 2013-14 to FY 2025-26. Compares business tax avoided against estimated incremental tax in related individual ITRs.</p>
     <button onclick="window.print()">Export dashboard to PDF</button>
   </header>
   <main>
@@ -259,7 +255,7 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
       <div class="card"><h2>Tax Saved Trend</h2><svg id="line" viewBox="0 0 1120 430"></svg><div class="legend" id="lineLegend"></div></div>
       <div class="card"><h2>Interpretation</h2><div class="notes" id="notes"></div></div>
     </section>
-    <section class="card"><h2>Business Tax Saved vs Parent Tax Cost</h2><svg id="bars" viewBox="0 0 1120 430"></svg><div class="legend" id="barLegend"></div></section>
+    <section class="card"><h2>Business Tax Saved vs Individual Tax Cost</h2><svg id="bars" viewBox="0 0 1120 430"></svg><div class="legend" id="barLegend"></div></section>
     <section class="card"><h2>Year-wise Reassessment Matrix</h2><div class="table-wrap"><table id="table"></table></div></section>
   </main>
   <script>
@@ -270,7 +266,7 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
     const colors = ["#0f766e","#2563eb","#b45309","#be123c","#7c3aed"];
     function path(points) {{ return points.map((p,i)=>`${{i?"L":"M"}} ${{p.x.toFixed(2)}} ${{p.y.toFixed(2)}}`).join(" "); }}
     function drawLine() {{
-      const metrics = ["Business Tax Saved","Estimated Parent Incremental Tax","Estimated Net Tax Saved"];
+      const metrics = ["Business Tax Saved","Estimated Individual Incremental Tax","Estimated Net Tax Saved"];
       const W=1120,H=430,L=82,R=24,T=24,B=76,max=Math.max(...data.flatMap(r=>metrics.map(m=>r[m])),1),yMax=Math.ceil(max*1.12/100000)*100000 || 1;
       const x=i=>L+i*((W-L-R)/(data.length-1)), y=v=>T+(H-T-B)*(1-v/yMax);
       let html="";
@@ -281,7 +277,7 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
       document.getElementById("lineLegend").innerHTML=metrics.map((m,i)=>`<span><i class="swatch" style="background:${{colors[i]}}"></i>${{m}}</span>`).join("");
     }}
     function drawBars() {{
-      const metrics=["Business Tax Saved","Estimated Parent Incremental Tax","Estimated Net Tax Saved"], W=1120,H=430,L=82,R=24,T=24,B=76;
+      const metrics=["Business Tax Saved","Estimated Individual Incremental Tax","Estimated Net Tax Saved"], W=1120,H=430,L=82,R=24,T=24,B=76;
       const max=Math.max(...data.flatMap(r=>metrics.map(m=>r[m])),1), yMax=Math.ceil(max*1.12/100000)*100000 || 1, gw=(W-L-R)/data.length, bw=Math.max(8,gw*.18), y=v=>T+(H-T-B)*(1-v/yMax);
       let html="";
       [0,.25,.5,.75,1].forEach(t=>{{ const val=yMax*t, yy=y(val); html += `<line class="gridline" x1="${{L}}" y1="${{yy}}" x2="${{W-R}}" y2="${{yy}}"></line><text x="${{L-10}}" y="${{yy+4}}" text-anchor="end" fill="#657385" font-size="11">${{(val/100000).toFixed(1)}}L</text>`; }});
@@ -293,10 +289,10 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
       const totals = {{
         routed: data.reduce((s,r)=>s+r["Total Routed"],0),
         businessSaved: data.reduce((s,r)=>s+r["Business Tax Saved"],0),
-        parentTax: data.reduce((s,r)=>s+r["Estimated Parent Incremental Tax"],0),
+        individualTax: data.reduce((s,r)=>s+r["Estimated Individual Incremental Tax"],0),
         net: data.reduce((s,r)=>s+r["Estimated Net Tax Saved"],0),
       }};
-      const cards=[["Total Routed",money(totals.routed),"Across available ITR years"],["Business Tax Saved",money(totals.businessSaved),"At selected business tax profile"],["Parent Tax Cost",money(totals.parentTax),"Incremental slab tax"],["Net Tax Saved",money(totals.net),"Business saved minus parent tax"]];
+      const cards=[["Total Routed",money(totals.routed),"Across available ITR years"],["Business Tax Saved",money(totals.businessSaved),"At selected business tax profile"],["Individual Tax Cost",money(totals.individualTax),"Incremental slab tax"],["Net Tax Saved",money(totals.net),"Business saved minus individual tax"]];
       document.getElementById("stats").innerHTML=cards.map(c=>`<article class="card"><div class="label">${{c[0]}}</div><div class="value">${{c[1]}}</div><div class="sub">${{c[2]}}</div></article>`).join("");
     }}
     function renderNotes() {{
@@ -309,7 +305,7 @@ def build_dashboard(df: pd.DataFrame, output_path: Path, source_snapshot_path: P
       ].map(x=>`<div>${{x}}</div>`).join("");
     }}
     function renderTable() {{
-      const cols=["Financial Year","Business Profile","Individual Regime","Total Routed","Business Tax Without Routing","Business Tax Saved","Estimated Parent Incremental Tax","Estimated Net Tax Saved","Net Saved Using Actual Tax Paid"];
+      const cols=["Financial Year","Business Profile","Individual Regime","Total Routed","Business Tax Without Routing","Business Tax Saved","Estimated Individual Incremental Tax","Estimated Net Tax Saved","Net Saved Using Actual Tax Paid"];
       let html=`<thead><tr>${{cols.map(c=>`<th>${{c}}</th>`).join("")}}</tr></thead><tbody>`;
       data.forEach(r=>{{ html+="<tr>"; cols.forEach(c=>{{ const v=r[c]; html+=`<td>${{typeof v==="number"?money(v):v}}</td>`; }}); html+="</tr>"; }});
       document.getElementById("table").innerHTML=html+"</tbody>";
@@ -338,19 +334,19 @@ def fetch_rate_source_snapshot(output_folder: Path) -> Path:
 
 
 def print_outputs(df: pd.DataFrame) -> None:
-    cols = ["Financial Year", "Business Profile", "Total Routed", "Business Tax Saved", "Estimated Parent Incremental Tax", "Estimated Net Tax Saved"]
+    cols = ["Financial Year", "Business Profile", "Total Routed", "Business Tax Saved", "Estimated Individual Incremental Tax", "Estimated Net Tax Saved"]
     print("\nYEAR-WISE ROUTING TAX SAVINGS")
     print(format_df(df[cols]).to_string(index=False))
     print("\nTOTALS")
     print(f"Total routed: {money(df['Total Routed'].sum())}")
     print(f"Business tax saved: {money(df['Business Tax Saved'].sum())}")
-    print(f"Incremental parent tax: {money(df['Estimated Parent Incremental Tax'].sum())}")
+    print(f"Incremental individual tax: {money(df['Estimated Individual Incremental Tax'].sum())}")
     print(f"Estimated net tax saved: {money(df['Estimated Net Tax Saved'].sum())}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Graphical tax-routing reassessment simulator.")
-    parser.add_argument("--person-folder", action="append", required=True, help="Example: Father=PapaITR")
+    parser.add_argument("--person-folder", action="append", required=True, help="Example: PersonA=../sample-data/person-a")
     parser.add_argument("--business-profile", default="company_25", choices=sorted(BUSINESS_TAX_PROFILES))
     parser.add_argument("--individual-regime", default="old", choices=["old", "new"])
     parser.add_argument("--csv", default="tax_routing_simulation.csv")

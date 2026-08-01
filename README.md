@@ -16,8 +16,8 @@ Tax Kraken is a local-first Indian Income Tax Return post-analysis toolkit. It e
 
 ```powershell
 python -m pip install -e ".[docs]"
-python analysis.py --folder "C:\Users\gauravagarwal\Downloads\PapaITR\PapaITR"
-python analysis.py --folder "C:\Users\gauravagarwal\Downloads\PapaITR\MummyITR"
+python analysis.py --folder "..\sample-data\person-a"
+python analysis.py --folder "..\sample-data\person-b"
 ```
 
 Open the generated `dashboard.html` inside the target folder.
@@ -27,7 +27,7 @@ Open the generated `dashboard.html` inside the target folder.
 After generating JSON for each ITR folder:
 
 ```powershell
-python tax_routing_simulation.py --person-folder Father="C:\path\to\PapaITR" --person-folder Mother="C:\path\to\MummyITR" --business-profile company_25 --individual-regime old --fetch-rate-sources
+python tax_routing_simulation.py --person-folder PersonA="..\sample-data\person-a" --person-folder PersonB="..\sample-data\person-b" --business-profile company_25 --individual-regime old --fetch-rate-sources
 ```
 
 Open `tax_routing_dashboard.html` for the graphical reassessment.
