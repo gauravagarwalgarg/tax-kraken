@@ -1,0 +1,17 @@
+site_name: ITR Post Analyzer
+site_description: Folder-driven Indian Income Tax Return analytics dashboard and forecasting tool.
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+nav:
+  - Home: index.md
+  - Approach: approach.md
+  - Features: features.md
+  - CLI Usage: usage.md
+  - Data Model: data-model.md
+  - Forecasting: forecasting.md
+  - Routing Simulation: routing-simulation.md
+  - GitHub Pages: github-pages.md

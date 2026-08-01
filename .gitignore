@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Local ITR source files and generated analysis outputs
+*.pdf
+*.PDF
+**/json/
+**/output/
+**/dashboard.html
+**/itr_dataset.csv
+tax_routing_simulation.csv
+official_tax_rate_sources_snapshot.json
+tax_routing_dashboard.html
+tax_routing_rate_assumptions.json
+
+# MkDocs build
+site/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

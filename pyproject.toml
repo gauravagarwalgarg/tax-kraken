@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tax-kraken"
+version = "0.1.0"
+description = "Local-first Indian ITR post-analysis, tax routing simulation, and dashboard toolkit."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Tax Kraken Contributors" }
+]
+dependencies = [
+  "pandas>=2.0",
+  "pdfplumber>=0.11",
+  "reportlab>=4.0"
+]
+
+[project.optional-dependencies]
+docs = [
+  "mkdocs-material>=9.5"
+]
+
+[tool.setuptools]
+py-modules = ["analysis", "tax_routing_simulation"]
+
