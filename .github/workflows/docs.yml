@@ -52,18 +52,16 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Debug: show Pages site and deployments
-        if: ${{ always() }}
-        shell: bash
         run: |
           echo "--- Pages API: site info ---"
           curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/pages" || true
-          echo "\n--- Pages API: deployments ---"
+          echo "--- Pages API: deployments ---"
           curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/deployments" || true
-          echo "\n--- Git remote heads (gh-pages) ---"
+          echo "--- Git remote heads (gh-pages) ---"
           git fetch origin gh-pages || true
           git ls-remote --heads origin gh-pages || true
 
